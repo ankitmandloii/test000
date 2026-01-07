@@ -193,7 +193,7 @@
 // //         const response = await fetch(SHOPIFY_API_URL, {
 // //             method: 'GET',
 // //             headers: {
-// //                 'X-Shopify-Access-Token': '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', // Replace with your actual token
+// //                 'X-Shopify-Access-Token': '', // Replace with your actual token
 // //             }
 // //         });
 
