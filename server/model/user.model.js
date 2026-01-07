@@ -1,15 +1,34 @@
+// const mongoose = require('mongoose');
+
+// const user = new mongoose.Schema({
+//     userName: { type: String, trim: true, required: true },
+//     email: { type: String, trim: true, required: true },
+//     password: { type: String, trim: true, required: true }
+// }, {
+//     timestamps: true
+// })
+
+
+// const User = mongoose.model("User", user);
+// module.exports = User;
+
+
 const mongoose = require('mongoose');
 
-const user = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     userName: { type: String, trim: true, required: true },
-    email: { type: String, trim: true, required: true },
-    password: { type: String, trim: true, required: true }
-}, {
-    timestamps: true
-})
+    userEmail: { type: String, trim: true, required: true, unique: true },
+    password: { type: String, trim: true, required: true },
+}, { timestamps: true });
 
 
-const User = mongoose.model("User", user);
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);
 
 
+
+const User = require("../User");
+export const userCreated = async()=>{
+    await User.create({
+        userName  :
+    })
+}

@@ -1,93 +1,121 @@
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import EmailTriggerPage from './pages/EmailTriggerPage';
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { useEffect, useState } from 'react';
-import "./App.css"
+import "./App.css";
+
 function App() {
   const [socket, setSocket] = useState(null);
-  const [sender, setSender] = useState();
-  const [reciever, setReciever] = useState();
-  const [chats, setChats] = useState([]);
+  const [sender, setSender] = useState("");
+  const [receiver, setReceiver] = useState("");
   const [message, setMessage] = useState("");
+  const [chats, setChats] = useState([]);
   const [showWelcome, setShowWelcome] = useState(false);
-  useEffect(() => {
-    const socket = io("http://localhost:8080");
-    setSocket(socket);
 
-    socket?.on("connect", () => {
-      console.log(socket.id, "connection established");
+  // 🔌 Connect socket
+  useEffect(() => {
+    const socketInstance = io("http://localhost:5000");
+
+    setSocket(socketInstance);
+
+    socketInstance.on("connect", () => {
+      console.log("✅ Connected:", socketInstance.id);
     });
 
-    // socket?.on("disconnect", () => {
-    //   console.log(socket.id); // undefined
-    // });
+    // 📩 Receive messages
+    socketInstance.on("chat-message", (data) => {
+      setChats((prev) => [...prev, data]);
+    });
 
-    socket?.on("chat-message", (sender, reciever, message) => {
-      console.log("chat-message called", sender, reciever, message);
-      setChats((prev) => ([...prev, { sender, reciever, message }]));
-    })
+    // 🧹 Cleanup
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, []);
 
+  // 🚪 Join room once
+  const joinRoom = () => {
+    if (!sender || !receiver) return;
 
-    return
+  
+    socket.emit("join-room", {
+      sender,
+      receiver,
+    });
 
-  }, [])
+    setShowWelcome(true);
+  };
 
-  function sendMessage(message) {
-    if (message == "") {
-      alert("please write something!");
-      return;
-    }
-    socket.emit("chat-message", sender, reciever, message);
-    setChats((prev) => ([...prev, { sender, reciever, message }]))
+  // 📤 Send message
+  const sendMessage = () => {
+    if (!message.trim()) return;
+
+    socket.emit("chat-message", {
+      sender,
+      receiver,
+      message,
+    });
+
     setMessage("");
-  }
+  };
 
   return (
-    //  <EmailTriggerPage/>
     <>
-
-      {
-        !showWelcome && <div className='welcome'>
+      {!showWelcome && (
+        <div className="welcome">
           <h2>Welcome To Chat App</h2>
-          <label className='lable'>
-            <p className='nameLable'>Enter sender name</p>
-            <input type='text' onChange={(e) => setSender(e.target.value)}></input>
-          </label>
-          <label className='lable'>
-            <p className='nameLable'>Enter reciever name</p>
-            <input type='text' onChange={(e) => setReciever(e.target.value)}></input>
-          </label>
-        <button onClick={() => {
-          if(sender && reciever){
-            setShowWelcome(true)
-          }
-        }}  className='Button' disabled={ !sender || !reciever}>Enter</button>
 
+          <label className="label">
+            <p>Sender Name</p>
+            <input
+              type="text"
+              value={sender}
+              onChange={(e) => setSender(e.target.value)}
+            />
+          </label>
+
+          <label className="label">
+            <p>Receiver Name</p>
+            <input
+              type="text"
+              value={receiver}
+              onChange={(e) => setReceiver(e.target.value)}
+            />
+          </label>
+
+          <button
+            className="button"
+            onClick={joinRoom}
+            disabled={!sender || !receiver || !socket}
+          >
+            Enter Chat
+          </button>
         </div>
-      }
- 
- {
-  showWelcome && <div className='chatContainer'>
-      <div className='chatBox'>
-        {chats.map((chat) => {
-          return <div className={sender == chat.sender ? "sender" :"reciever"}>
-            <p className='senderName'>{chat.sender}</p>
-            <span className={sender == chat.sender ? "sender message" :"reciever message"} > {chat.message}</span>
+      )}
+
+      {showWelcome && (
+        <div className="chatContainer">
+          <div className="chatBox">
+            {chats.map((chat, index) => (
+              <div
+                key={index}
+                className={chat.sender === sender ? "sender" : "receiver"}
+              >
+                <p className="senderName">{chat.sender}</p>
+                <span className="message">{chat.message}</span>
+              </div>
+            ))}
           </div>
-        })}
-      </div>
-      <label className='inputContainer'>
-        <input type='text' value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => {
-          if(e.key == "Enter"){
-            sendMessage(message)
-          }
-        }}></input>
-        <button onClick={() => sendMessage(message)} disabled={!socket}>send</button>
-      </label>
 
-  </div>
- }
-
+          <div className="inputContainer">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            />
+            <button onClick={sendMessage}>Send</button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

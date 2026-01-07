@@ -380,51 +380,58 @@
 
 ////////////////////////////////
 
-/*
-const { Server } = require("socket.io");
+
 const http = require('http');
+const { Server } = require('socket.io');
+
 
 const httpServer = http.createServer();
 
+
+
+const getRoomName = (userOne, userTwo) => {
+    return [userOne, userTwo].sort().join('-');
+}
 const io = new Server(httpServer, {
     cors: {
         origin: "*",
-        credentials: true,
-        methods: ['GET', 'POST']
+        methods: ["GET", "POST"]
     }
 });
-const allRooms = io.sockets.adapter.rooms;
 
 io.on("connection", (socket) => {
-    console.log("connection established successfully!", socket.id);
-    socket.on("chat-message", async (sender, reciever, message) => {
-        console.log(sender, reciever, "messaged :", message);
-        let roomName = reciever + sender;
-        if (allRooms.has(roomName)) {
-            console.log("room already exist");
-            socket.join(roomName);
-            socket.to(roomName).emit("chat-message",sender, reciever, message);
-            console.log("sended messsage to client")
 
-        }
-        else {
-            socket.join(sender + reciever);
-            console.log("room not exist creating one ");
-            socket.to(sender + reciever).emit("chat-message",sender, reciever, message);
-            console.log("sended messsage to client")
-        }
-
-
+    socket.on("join-room", ({ sender, receiver }) => {
+        const roomName = getRoomName(sender, receiver);
+        console.log(roomName, "getName");
+        socket.join(roomName);
+        console.log(`📦 ${sender} joined room ${roomName}`);
     });
 
+    socket.on("chat-message", ({ sender, receiver, msg }) => {
+        const room = getRoomName(sender, receiver);
+        console.log(`💬 Message from ${sender} to ${receiver}:`, msg);
 
+        io.to(room).emit("chat-message",{
+            sender,
+            receiver,
+            msg,
+            timeStamp: new Date().toISOString(),
+        });
+
+        socket.on("disconnect", ()=>{
+             console.log("🔴 User disconnected:", socket.id);
+        });
+
+    })
 
 });
 
 
-httpServer.listen(8080);
+httpServer.listen(5000, () => {
+    console.log("ready server");
+
+});
 
 
 
-
-*/
