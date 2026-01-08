@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TaskManager.css'
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 
 const TaskManager = () => {
@@ -10,8 +11,8 @@ const TaskManager = () => {
   const [taskName, setTaskName] = useState('');
   const [descriptionTask, setDescriptionTask] = useState('');
   const [editTaskId, setEditTaskId] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [showTaskList, setShowTaskList] = useState(false);
+  
+    const navigate = useNavigate();
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -134,12 +135,14 @@ const TaskManager = () => {
 
   const logout = () => {
     localStorage.removeItem('authToken'); 
+
+  navigate('/login'); 
   };
 
   return (
     <div className='TaskManagerWrapper'>
       <h1 className='heading'>Task Manager</h1>
-      <button onClick={() => logout} className='LogoutButton'>Logout</button>
+      <button onClick={logout} className='LogoutButton'>Logout</button>
       <label>
         Task Name
         <input
