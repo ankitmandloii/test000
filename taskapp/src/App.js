@@ -131,9 +131,9 @@ import TaskManager from './component/tasks/TaskManager.js';
 
 
 const App = () => {
-  // const navigate = useNavigate();
+  
   return (
-    <Router> {/* BrowserRouter as Router */}
+    <Router>
       <Routes>
         <></>
         <Route path='/' element={<Navigate to='/taskDashboard' />} /> {/* Redirect to /tasks */}

@@ -4,7 +4,7 @@ const { json } = require('express/lib/response.js');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 
-exports.signutest = async (email, userName, password) => {
+exports.signupCreateUser = async (email, userName, password) => {
     try {
         const saltRound = 10;
         const hashedPass = await bcrypt.hash(password, saltRound);
@@ -46,7 +46,6 @@ exports.comparePassword = async (user, password) => {
         SECRET_KEY,
         { expiresIn: '1d' }
     );
-
 
     return {
         user: {

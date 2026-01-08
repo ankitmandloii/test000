@@ -74,9 +74,9 @@ export const getTasks = async (token) => {
     }
     const data = await response.json();
     console.log("Fetched tasks:", data);
-    return data;  // Returning the response data (which should include the token)
+    return data;  
   } catch (error) {
-    throw error;  // Handle errors
+    throw error;  
   }
 };
 
