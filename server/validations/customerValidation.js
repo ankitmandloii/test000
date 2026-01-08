@@ -62,12 +62,7 @@ const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 
 
 
-/**
- * ------------------------------------------------------
- * JWT Authentication Middleware
- * ------------------------------------------------------
- * Protects private APIs by validating Bearer token
- */
+
 exports.verifyToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 

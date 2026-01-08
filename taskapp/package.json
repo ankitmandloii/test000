@@ -1,5 +1,5 @@
 {
-  "name": "trigger",
+  "name": "taskapp",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
