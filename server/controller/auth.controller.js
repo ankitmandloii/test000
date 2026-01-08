@@ -12,7 +12,6 @@ exports.signup = async (req, res) => {
             res.status(200).json({
                 message: 'User Doesn\'t created',
                 craetedUser
-
             });
         }
 
@@ -31,14 +30,30 @@ exports.signup = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    const { email, password } = req.body;
-    const user = await authserveice.checkUser();
-    if (user) {
-        throw new Error("USER NOT FOUND");
-    }
-    const comparePassword = await authserveice.comparePassword(user, password);
-    if (!comparePassword) {
+    try {
+        const { email, password } = req.body;
 
+        const user = await authserveice.checkUser(email);
+   
+        if (!user) {
+            throw new Error("USER NOT FOUND");
+        }
+   
+        const comparePassword = await authserveice.comparePassword(user, password);
+
+        if (!comparePassword) {
+            throw new Error("INVALID CREDENTIALS");
+        }
+      
+        res.status(200).json({
+            message: 'Login Successful',
+            ...comparePassword
+        });
+    } catch (err) {
+        res.status(500).json({
+            message: 'Internal Server Error',
+            error: err.message
+        });
     }
 
 }

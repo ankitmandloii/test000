@@ -17,7 +17,7 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     userName: { type: String, trim: true, required: true },
-    userEmail: { type: String, trim: true, required: true, unique: true },
+    email: { type: String, trim: true, required: true, unique: true },
     password: { type: String, trim: true, required: true },
 }, { timestamps: true });
 
@@ -25,10 +25,3 @@ const userSchema = new mongoose.Schema({
 module.exports = mongoose.model("User", userSchema);
 
 
-
-const User = require("../User");
-export const userCreated = async()=>{
-    await User.create({
-        userName  :
-    })
-}

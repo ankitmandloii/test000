@@ -31,11 +31,8 @@ exports.signutest = async (email, userName, password) => {
 
 
 exports.checkUser = async (email) => {
-    const yes = User.find({ email }).lean();
-    if (!yes) {
-        return false;
-    }
-    return true;
+    const user = await User.findOne({ email });
+    return user;
 }
 
 
